@@ -3,12 +3,16 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"packet-inspector/inspector"
+	"os"
 	"packet-inspector/resolver"
 	datalinklayer "packet-inspector/resolver/datalink-layer"
+	"time"
+
+	"github.com/gopacket/gopacket"
+	"github.com/gopacket/gopacket/pcap"
 )
 
-func work(cache []byte) {
+func worker(cache []byte) {
 	var packet resolver.IPacket = nil
 	for _, resolve := range datalinklayer.Resolvers {
 		packet = resolve(cache)
@@ -24,16 +28,17 @@ func work(cache []byte) {
 }
 
 func main() {
-	inspktr := inspector.NewInspector(4096)
-	err := inspktr.Open()
-	if err != nil {
-		println(err.Error())
-		return
+	if len(os.Args) < 2 {
+		panic("no device specified")
 	}
-	defer inspktr.Close()
+	handle, err := pcap.OpenLive(os.Args[1], 4096, false, 30*time.Second)
+	if err != nil {
+		panic(err)
+	}
+	defer handle.Close()
 
-	for {
-		cache, _ := inspktr.Read()
-		go work(cache)
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	for packet := range packetSource.Packets() {
+		go worker(packet.Data())
 	}
 }

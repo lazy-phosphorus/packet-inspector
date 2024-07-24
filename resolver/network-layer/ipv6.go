@@ -10,15 +10,15 @@ import (
 )
 
 const (
-	IPV6_NEXT_HEADER_HBH      uint8 = 0x0 // 逐跳扩展头
-	IPV6_NEXT_HEADER_TCP      uint8 = 0x6
-	IPV6_NEXT_HEADER_UDP      uint8 = 0x11
-	IPV6_NEXT_HEADER_ROUTING  uint8 = 0x2b // 路由扩展头
-	IPV6_NEXT_HEADER_FRAGMENT uint8 = 0x2c
-	IPV6_NEXT_HEADER_DO       uint8 = 0x3c // 目的选项扩展头
+	IPv6_NEXT_HEADER_HBH      uint8 = 0x0 // 逐跳扩展头
+	IPv6_NEXT_HEADER_TCP      uint8 = 0x6
+	IPv6_NEXT_HEADER_UDP      uint8 = 0x11
+	IPv6_NEXT_HEADER_ROUTING  uint8 = 0x2b // 路由扩展头
+	IPv6_NEXT_HEADER_FRAGMENT uint8 = 0x2c
+	IPv6_NEXT_HEADER_DO       uint8 = 0x3c // 目的选项扩展头
 )
 
-type IPV6 struct {
+type IPv6 struct {
 	resolver.IPacket
 	raw           []byte           // 原始报文
 	version       uint8            // 版本（4 bit）
@@ -32,44 +32,54 @@ type IPV6 struct {
 	data          resolver.IPacket // 上层协议的数据
 }
 
-func (ipv6 *IPV6) Hex() string {
+func (ipv6 *IPv6) Hex() string {
 	return hex.EncodeToString(ipv6.raw)
 }
 
-func (ipv6 *IPV6) Raw() []byte {
+func (ipv6 *IPv6) Raw() []byte {
 	return ipv6.raw
 }
 
-func (ipv6 *IPV6) ToReadableString(indent int) string {
+func (ipv6 *IPv6) ToReadableString(indent int) string {
 	builder := new(strings.Builder)
 	tabs := make([]byte, indent)
 	for i := range indent {
 		tabs[i] = '\t'
 	}
+
+	builder.Write(tabs)
+	builder.WriteString("Protocol: IPv6 (Network)\n")
+
 	builder.Write(tabs)
 	builder.WriteString("Version: ")
 	builder.WriteString(strconv.Itoa(int(ipv6.version)))
 	builder.WriteByte('\n')
+
 	builder.Write(tabs)
 	builder.WriteString("Traffic type: ")
 	builder.WriteString(fmt.Sprintf("0x%2X", ipv6.trafficType))
 	builder.WriteByte('\n')
+
 	builder.Write(tabs)
 	builder.WriteString("Flow label: ")
 	builder.WriteString(fmt.Sprintf("0x%05X", ipv6.flowLabel))
 	builder.WriteByte('\n')
+
 	builder.Write(tabs)
 	builder.WriteString("Payload length: ")
 	builder.WriteString(strconv.Itoa(int(ipv6.payloadLength)))
 	builder.WriteByte('\n')
+
 	builder.Write(tabs)
 	builder.WriteString("Next header: ")
 	builder.WriteString(fmt.Sprintf("0x%02X", ipv6.nextHeader))
 	builder.WriteByte('\n')
+
 	builder.Write(tabs)
 	builder.WriteString("Hop limit: ")
 	builder.WriteString(strconv.Itoa(int(ipv6.hopLimit)))
 	builder.WriteByte('\n')
+
 	builder.Write(tabs)
 	builder.WriteString("Source address: ")
 	for i := range ipv6.source {
@@ -79,6 +89,7 @@ func (ipv6 *IPV6) ToReadableString(indent int) string {
 		builder.WriteString(fmt.Sprintf(":%02X", ipv6.source[i]))
 	}
 	builder.WriteByte('\n')
+
 	builder.Write(tabs)
 	builder.WriteString("Destination address: ")
 	for i := range ipv6.destination {
@@ -87,6 +98,9 @@ func (ipv6 *IPV6) ToReadableString(indent int) string {
 		}
 		builder.WriteString(fmt.Sprintf(":%02X", ipv6.destination[i]))
 	}
+	builder.WriteByte('\n')
+
+	builder.Write(tabs)
 	builder.WriteString("Data: {\n")
 	if ipv6.data != nil {
 		builder.WriteString(ipv6.data.ToReadableString(indent + 1))
@@ -97,16 +111,17 @@ func (ipv6 *IPV6) ToReadableString(indent int) string {
 	}
 	builder.Write(tabs)
 	builder.WriteString("}\n")
+
 	builder.Write(tabs)
 	builder.WriteString("Raw: ")
 	builder.Write(ipv6.raw)
 	builder.WriteByte('\n')
-	builder.Write(tabs)
+
 	return builder.String()
 }
 
-func IPV6Resolve(packet []byte) resolver.IPacket {
-	ipv6 := new(IPV6)
+func IPv6Resolve(packet []byte) resolver.IPacket {
+	ipv6 := new(IPv6)
 	length := len(packet)
 	if length < 40 || length > 65575 {
 		return nil
@@ -123,19 +138,15 @@ func IPV6Resolve(packet []byte) resolver.IPacket {
 	}
 	ipv6.nextHeader = packet[6]
 	ipv6.hopLimit = packet[7]
-	for i := 0; i < 16; i++ {
-		ipv6.source[i] = packet[8+i]
-	}
-	for i := 0; i < 16; i++ {
-		ipv6.destination[i] = packet[24+i]
-	}
+	copy(ipv6.source[:], packet[8:24])
+	copy(ipv6.destination[:], packet[24:40])
 	switch ipv6.nextHeader {
-	case IPV6_NEXT_HEADER_TCP:
+	case IPv6_NEXT_HEADER_TCP:
 		resolve := transportlayer.Resolvers["TCP"]
 		if resolve != nil {
 			ipv6.data = resolve(packet[40 : 40+ipv6.payloadLength])
 		}
-	case IPV4_PROTOCOL_UDP:
+	case IPv4_PROTOCOL_UDP:
 		resolve := transportlayer.Resolvers["UDP"]
 		if resolve != nil {
 			ipv6.data = resolve(packet[40 : 40+ipv6.payloadLength])
