@@ -123,8 +123,7 @@ func (ethernet *EthernetII) ToReadableString(indent int) string {
 		builder.WriteString(ethernet.data.ToReadableString(indent + 1))
 	} else {
 		builder.Write(tabs)
-		builder.WriteByte('\t')
-		builder.WriteString("(NOT RESOLVED)\n")
+		builder.WriteString("\t(NOT RESOLVED)\n")
 	}
 	builder.Write(tabs)
 	builder.WriteString("}\n")

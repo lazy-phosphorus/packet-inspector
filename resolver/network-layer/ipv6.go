@@ -106,8 +106,7 @@ func (ipv6 *IPv6) ToReadableString(indent int) string {
 		builder.WriteString(ipv6.data.ToReadableString(indent + 1))
 	} else {
 		builder.Write(tabs)
-		builder.WriteByte('\t')
-		builder.WriteString("(NOT RESOLVED)\n")
+		builder.WriteString("\t(NOT RESOLVED)\n")
 	}
 	builder.Write(tabs)
 	builder.WriteString("}\n")

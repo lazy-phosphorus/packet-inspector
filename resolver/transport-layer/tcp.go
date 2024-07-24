@@ -12,26 +12,26 @@ import (
 
 type TCP struct {
 	resolver.IPacket
-	raw            []byte // 原始报文
-	source         uint16 // 源端口
-	destination    uint16 // 目的端口
-	sequence       uint32 // 序号字段
-	acknowledgment uint32 // 确认序号
-	dataOffset     uint8  // 数据偏移（首部长度），单位为 4 字节（4 bit）
-	reserved       uint8  // 保留位，全 0（4 bit）
-	cwr            bool   // 拥塞窗口减少标识
-	ece            bool   // ECN 回声标识
-	urg            bool   // 紧急指针有效标识
-	ack            bool   // 确认序号有效标识
-	psh            bool   // 尽快交付标识
-	rst            bool   // 重连标识
-	syn            bool   // 同步序号标识
-	fin            bool   // 结束标识
-	window         uint16 // 窗口
-	checksum       uint16 // 校验和
-	urgentPointer  uint16 // 紧急数据长度，仅在 urg 置 1 时有效
-	options        []byte // 选项字段
-	data           resolver.IPacket
+	raw            []byte           // 原始报文
+	source         uint16           // 源端口
+	destination    uint16           // 目的端口
+	sequence       uint32           // 序号字段
+	acknowledgment uint32           // 确认序号
+	dataOffset     uint8            // 数据偏移（首部长度），单位 4 字节（4 bit）
+	reserved       uint8            // 保留位，全 0（4 bit）
+	cwr            bool             // 拥塞窗口减少标识
+	ece            bool             // ECN 回声标识
+	urg            bool             // 紧急指针有效标识
+	ack            bool             // 确认序号有效标识
+	psh            bool             // 尽快交付标识
+	rst            bool             // 重连标识
+	syn            bool             // 同步序号标识
+	fin            bool             // 结束标识
+	window         uint16           // 窗口
+	checksum       uint16           // 校验和
+	urgentPointer  uint16           // 紧急数据长度，仅在 urg 置 1 时有效
+	options        []byte           // 选项字段
+	data           resolver.IPacket // 上层协议数据
 }
 
 func (tcp *TCP) Raw() []byte {
@@ -184,8 +184,7 @@ func (tcp *TCP) ToReadableString(indent int) string {
 		builder.WriteString(tcp.data.ToReadableString(indent + 1))
 	} else {
 		builder.Write(tabs)
-		builder.WriteByte('\t')
-		builder.WriteString("(NOT RESOLVED)\n")
+		builder.WriteString("\t(NOT RESOLVED)\n")
 	}
 	builder.Write(tabs)
 	builder.WriteString("}\n")

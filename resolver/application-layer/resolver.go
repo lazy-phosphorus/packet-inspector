@@ -5,5 +5,6 @@ import "packet-inspector/resolver"
 var Resolvers = map[string]resolver.PacketResolver{}
 
 func init() {
-	Resolvers["PIEP"] = PIEPResolve
+	Resolvers["PieP"] = PiePResolve
+	Resolvers["FlexRay"] = FlexRayResolve
 }

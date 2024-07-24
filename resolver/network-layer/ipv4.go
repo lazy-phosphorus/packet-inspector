@@ -23,7 +23,7 @@ type IPv4 struct {
 	resolver.IPacket
 	raw            []byte           // 原始数据
 	version        uint8            // 版本，应当为 0b0100（4 bit）
-	headerLength   uint8            // 报文头长度，单位为 4 字节（4 bit）
+	headerLength   uint8            // 报文头长度，单位 4 字节（4 bit）
 	serviceType    uint8            // 服务类型
 	length         uint16           // 总长度
 	identification uint16           // 标识符
@@ -150,8 +150,7 @@ func (ipv4 *IPv4) ToReadableString(indent int) string {
 		builder.WriteString(ipv4.data.ToReadableString(indent + 1))
 	} else {
 		builder.Write(tabs)
-		builder.WriteByte('\t')
-		builder.WriteString("(NOT RESOLVED)\n")
+		builder.WriteString("\t(NOT RESOLVED)\n")
 	}
 	builder.Write(tabs)
 	builder.WriteString("}\n")

@@ -9,25 +9,25 @@ import (
 	"strings"
 )
 
-type PIEP struct {
+type PieP struct {
 	resolver.IPacket
-	raw        []byte // 原始数据
+	raw        []byte // 原始报文
 	startBit   uint8  // 起始位
 	address    uint32 // 设备地址
 	frameType  uint8  // 帧类型
-	dataLength uint8  // 载荷长度，以字节为单位
+	dataLength uint8  // 载荷长度，单位 1 字节
 	payload    []byte // 载荷
 }
 
-func (piep *PIEP) Raw() []byte {
+func (piep *PieP) Raw() []byte {
 	return piep.raw
 }
 
-func (piep *PIEP) Hex() string {
+func (piep *PieP) Hex() string {
 	return strings.ToUpper(hex.EncodeToString(piep.raw))
 }
 
-func (piep *PIEP) ToReadableString(indent int) string {
+func (piep *PieP) ToReadableString(indent int) string {
 	builder := new(strings.Builder)
 	tabs := make([]byte, indent)
 	for i := range indent {
@@ -35,7 +35,7 @@ func (piep *PIEP) ToReadableString(indent int) string {
 	}
 
 	builder.Write(tabs)
-	builder.WriteString("Protocol: PIEP (Application)\n")
+	builder.WriteString("Protocol: PieP (Application)\n")
 
 	builder.Write(tabs)
 	builder.WriteString("Start bit: ")
@@ -70,8 +70,8 @@ func (piep *PIEP) ToReadableString(indent int) string {
 	return builder.String()
 }
 
-func PIEPResolve(packet []byte) resolver.IPacket {
-	piep := new(PIEP)
+func PiePResolve(packet []byte) resolver.IPacket {
+	piep := new(PieP)
 	length := len(packet)
 
 	if length < 7 {
