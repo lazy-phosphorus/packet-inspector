@@ -98,7 +98,7 @@ func (flexray *FlexRay) ToReadableString(indent int) string {
 	builder.WriteByte('\n')
 
 	builder.Write(tabs)
-	builder.WriteString("ID : ")
+	builder.WriteString("checksum: ")
 	builder.WriteString(fmt.Sprintf("%04X", flexray.checksum))
 	builder.WriteByte('\n')
 
@@ -113,12 +113,12 @@ func (flexray *FlexRay) ToReadableString(indent int) string {
 	builder.WriteByte('\n')
 
 	builder.Write(tabs)
-	builder.WriteString("Frame tail : ")
+	builder.WriteString("Frame tail: ")
 	builder.WriteString(fmt.Sprintf("%06X", flexray.trailer))
 	builder.WriteByte('\n')
 
 	builder.Write(tabs)
-	builder.WriteString("Raw : ")
+	builder.WriteString("Raw: ")
 	builder.WriteString(flexray.Hex())
 	builder.WriteByte('\n')
 

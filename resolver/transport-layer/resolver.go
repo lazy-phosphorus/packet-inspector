@@ -6,4 +6,5 @@ var Resolvers = map[string]resolver.PacketResolver{}
 
 func init() {
 	Resolvers["TCP"] = TCPResolve
+	Resolvers["UDP"] = UDPResolve
 }

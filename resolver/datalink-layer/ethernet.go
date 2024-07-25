@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+type EthernetInnerProtocol uint16
+
 const (
 	ETHERNET_PROTOCOL_IPv4 uint16 = 0x0800
 	ETHERNET_PROTOCOL_ARP  uint16 = 0x0806

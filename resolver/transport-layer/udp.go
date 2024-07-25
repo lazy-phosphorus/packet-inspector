@@ -82,6 +82,7 @@ func UDPResolve(packet []byte) resolver.IPacket {
 	udp.source = utils.ExtractUint16BE(packet, 0)
 	udp.destination = utils.ExtractUint16BE(packet, 2)
 	udp.length = utils.ExtractUint16BE(packet, 4)
+	println("length = ", length, "udp length = ", udp.length)
 	if length != int(udp.length) {
 		return nil
 	}
