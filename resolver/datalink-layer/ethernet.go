@@ -27,7 +27,7 @@ var ETHERNET_PROTOCOL_NAME = map[uint16]string{
 // 尝试用以太网帧格式解析报文
 func EthernetResolve(packet []byte) resolver.IPacket {
 	length := len(packet)
-	if length < 64 || length > 1500 {
+	if length < 14 || length > 1500 {
 		return nil
 	}
 

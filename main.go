@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"log"
 	"os"
 	"packet-inspector/resolver"
 	applicationlayer "packet-inspector/resolver/application-layer"
 	datalinklayer "packet-inspector/resolver/datalink-layer"
+	"strings"
 	"time"
 
 	"github.com/gopacket/gopacket"
@@ -28,7 +28,6 @@ type stream struct {
 }
 
 func (factory *reassembler) New(net gopacket.Flow, transport gopacket.Flow) tcpassembly.Stream {
-	log.Printf("new stream %v:%v started", net, transport)
 	s := &stream{
 		net:       net,
 		transport: transport,
@@ -55,7 +54,7 @@ func (s *stream) ReassemblyComplete() {
 			return
 		}
 	}
-	fmt.Printf("[Application Layer] Can not resolve %s\n", hex.EncodeToString(s.data))
+	fmt.Printf("[Application Layer] Can not resolve %s\n", strings.ToUpper(hex.EncodeToString(s.data)))
 }
 
 func worker(packet gopacket.Packet) {
@@ -67,7 +66,7 @@ func worker(packet gopacket.Packet) {
 		}
 	}
 	if resolvedPacket == nil {
-		fmt.Printf("[Datalink Layer] Can not resolve %s\n", hex.EncodeToString(packet.Data()))
+		fmt.Printf("[Datalink Layer] Can not resolve %s\n", strings.ToUpper(hex.EncodeToString(packet.Data())))
 	} else {
 		println(resolvedPacket.ToReadableString(0))
 	}
